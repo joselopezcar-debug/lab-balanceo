@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel CRUD</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f4f4f9; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        form { display: flex; gap: 10px; margin: 20px 0; }
+        form input { flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        form button { padding: 8px 15px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background: #f8f9fa; }
+        .btn-del { color: #dc3545; text-decoration: none; font-weight: bold; }
+        .badge { background: #17a2b8; color: white; padding: 5px 10px; border-radius: 4px; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Gestión de Usuarios (CRUD)</h2>
+            <span class="badge" id="info-puerto">Puerto: ---</span>
+        </div>
+
+        <form action="/api/usuarios" method="POST">
+            <input type="text" name="nombre" placeholder="Nombre" required>
+            <input type="email" name="email" placeholder="Correo" required>
+            <button type="submit">Agregar</button>
+        </form>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Email</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-usuarios">
+                <!-- Se llena con JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Obtener info del servidor
+        fetch('/api/info')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('info-puerto').innerText = `Atendido por: ${data.puerto}`;
+            });
+
+        // Obtener lista de usuarios para el CRUD
+        fetch('/api/usuarios')
+            .then(res => res.json())
+            .then(usuarios => {
+                const tbody = document.getElementById('tabla-usuarios');
+                usuarios.forEach(u => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${u.id}</td>
+                            <td>${u.nombre}</td>
+                            <td>${u.email}</td>
+                            <td><a class="btn-del" href="/api/usuarios/eliminar/${u.id}">❌ Eliminar</a></td>
+                        </tr>
+                    `;
+                });
+            });
+    </script>
+</body>
+</html>
